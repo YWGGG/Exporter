@@ -10,8 +10,11 @@ import xlwt
 stuDict = {}
 testflag = False
 
-correctDict_1 = {"2.2.2.2:1080":0,"2.2.2.3:1080":0}
-wrongDict_1 = {"2.2.2.4":0, "2.2.2.5":0, "2.2.2.6":0, "2.2.2.7":0}
+# correctDict_1 = {"2.2.2.2:1080":0,"2.2.2.3:1080":0}
+# wrongDict_1 = {"2.2.2.4":0, "2.2.2.5":0, "2.2.2.6":0, "2.2.2.7":0}
+
+correctDict_1 = {"112.80.248.76:1080":0,"112.80.248.77:1080":0,"112.80.248.78:1080":0,"112.80.248.79:1080":0}
+wrongDict_1 =  {"112.80.248.76:80":0,"112.80.248.77:80":0,"112.80.248.78:80":0,"112.80.248.79:80":0,"112.80.248.76:180":0,"112.80.248.77:180":0,"112.80.248.78:180":0,"112.80.248.79:180":0}
 
 #hwk2
 #1. Correct 192.168.1.5:65404 login 1.2.3.4:1
@@ -95,7 +98,7 @@ class StuInfo():
 			for line in f:
 				for k in correctDict.keys():
 					if line.find(k) != -1:
-						correctDict[k] = 1
+						correctDict[k] += 1
 						break
 				for k in wrongDict.keys():
 					if line.find(k) != -1:
@@ -110,6 +113,15 @@ class StuInfo():
 					self.result = -5
 					self.resultStr = "ERROR_MISS_ALERT"
 					print("Error " + k)
+
+
+			# should be only 4
+			if self.result == 0:
+				for k in correctDict.keys():
+					if correctDict[k] > 1:
+						self.result = -6
+						self.resultStr = "ERROR_SURP_ALERT"
+						print("Error " + k)
 
 	def evelZeekAlert(self, hwkid, outstr):
 		logfile = "/var/log/snort/alert"
@@ -176,6 +188,8 @@ class StuInfo():
 	def calcScore(self):
 		if self.result == 0:
 			self.score = 100
+		elif self.result == -6:
+			self.score = 80
 		elif self.result == -5:
 			self.score = 80
 		elif self.result == -4:
@@ -205,9 +219,14 @@ def initHWList(filename):
 def evalSnort(stu, fname, pcapname, hwkid):
 	#prepare work: clear alert, move test.rules to snort/local.rules
 	subprocess.run(["rm","-r", "/var/log/snort/alert"])
-	shutil.copy(fname, "snort/local.rules")
-	snortconf = "/etc/snort/snort.conf.idshwk"
-	ret = subprocess.run(["snort", "-A", "fast", "-c" ,snortconf, "-r", pcapname],capture_output=True)
+	
+	# shutil.copy(fname, "snort/local.rules")
+	# snortconf = "/etc/snort/snort.conf.idshwk"   
+	local_rules =  fname
+	
+	
+	# ret = subprocess.run(["snort", "-A", "fast", "-c" ,local_rules, "-r", pcapname],capture_output=True)
+	ret = subprocess.run(["snort", "-A", "fast", "-c" ,local_rules, "-r", pcapname])
 	if ret.returncode != 0:
 		stu.result = -3
 		stu.resultStr = "ERROR_IDS_WRONG"
@@ -220,6 +239,7 @@ def evalSnort(stu, fname, pcapname, hwkid):
 			else:
 				stu.resultStr += " : " + toks[1]
 	else:
+		print("begin test>>>>>>>>")
 		stu.evelSnortAlert(hwkid)
 
 def evalZeek(stu, fname, pcapname, hwkid):
