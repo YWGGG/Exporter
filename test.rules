@@ -1,0 +1,14 @@
+alert tcp any any -> any 3399 (\
+msg : "boot founded" ; \
+pcre : "/login|initial/" ; \
+sid : 1000001; \
+)
+
+
+
+
+alert tcp any any -> any 3399 (\
+msg : "boot founded" ; \
+pcre : "/login|initial/" ; \
+sid : 1000001; \
+)
