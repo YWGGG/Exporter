@@ -230,15 +230,16 @@ def evalSnort(stu, fname, pcapname, hwkid):
 	
 	
 	# ret = subprocess.run(["snort", "-A", "fast", "-c" ,local_rules, "-r", pcapname],capture_output=True)
-	ret = subprocess.run(["snort", "-A", "fast", "-c" ,local_rules, "-r", pcapname])
+	ret = subprocess.run(["snort", "-A", "fast", "-c" ,local_rules, "-r", pcapname],stderr=subprocess.PIPE)
 	if ret.returncode != 0:
 		stu.result = -3
 		stu.resultStr = "ERROR_IDS_WRONG"
 		errstr = str(ret.stderr)
 		toks = errstr.split("ERROR")
 		if len(toks) == 2:
-			if toks[1].find("local.rules") != -1:
-				subtoks = toks[1].split("local.rules")
+			# local.rules -> test.rules
+			if toks[1].find("test.rules") != -1:
+				subtoks = toks[1].split("test.rules")
 				stu.resultStr +=  " : " + subtoks[1]
 			else:
 				stu.resultStr += " : " + toks[1]
