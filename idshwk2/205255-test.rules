@@ -1,7 +1,7 @@
 
 alert tcp any any  -> any 3399 (\
 msg : "bot founded" ; \
-pce : "/login|Initial/" ; \
+pcre : "/login|Initial/" ; \
 sid : 1000000 ; \
 )
 
