@@ -1,6 +1,6 @@
 ## Snort_hwk
 ### 使用方法:
-1、namesort.txt文件中按行存放学生的  ```学号 + github account name```  (例如```205255 fleetpip```)。 
+1、namesort.txt文件中按行存放学生的  ```学号 + github username name```  (例如```205255 fleetpip```)。 
 
 学生需要在自己的github上新建两个repository(idshwk1和idshwk2)，idshwk1存放第一次作业的test.rules，idshwk2存放第二次作业的test.rules。
 
